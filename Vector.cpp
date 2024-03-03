@@ -38,6 +38,12 @@ bool Vector::empty() const {
 	return (real_size == 0);
 }
 
+void Vector::clear() {
+	while (!empty()) {
+		pop_back();
+	}
+}
+
 void Vector::storage_expansion() {
 	if (real_size == storage_size) {
 		int* temp_storage_ptr = new int[storage_size * 2];

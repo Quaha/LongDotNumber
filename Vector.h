@@ -20,6 +20,8 @@ public:
 	unsigned int size() const;
 	bool empty() const;
 
+	void clear();
+
 	void push_back(int value);
 	void pop_back();
 	int back() const;

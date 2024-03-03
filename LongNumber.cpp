@@ -12,6 +12,9 @@ void LongNumber::makeCorrect() {
 			number[i + 1] += number[i] / BASE;
 			number[i] %= BASE;
 		}
+	}
+
+	for (int i = 0; i < number.size(); i++) {
 		if (number[i] < 0) {
 			number[i] += BASE;
 			if (i + 1 != number.size()) {
@@ -19,6 +22,7 @@ void LongNumber::makeCorrect() {
 			}
 		}
 	}
+
 	while (number.size() > 1 && number.back() == 0) {
 		number.pop_back();
 	}
@@ -27,51 +31,42 @@ void LongNumber::makeCorrect() {
 	}
 }
 
-LongNumber LongNumber::stringToLongNumber(const std::string& S) {
+LongNumber LongNumber::stringToLongNumber(std::string S) {
 	if (S[0] == '-') {
 		sign = -1;
-		int sz = (S.size() - 1) / BASE_SIZE + (int)(((S.size() - 1) % BASE_SIZE) != 0);
-		number.resize(sz, 0);
-		for (int i = 0, j = S.size(); i < size(); i++, j -= BASE_SIZE) {
-			int st = j - BASE_SIZE;
-			if (st <= 0) st = 1;
-			int d = j - st;
-			number[i] = stoi(S.substr(st, d));
-		}
+		S = S.substr(1, S.size() - 1);
 	}
-	else {
-		int sz = S.size() / BASE_SIZE + (int)((S.size() % BASE_SIZE) != 0);
-		number.resize(sz, 0);
-		for (int i = 0, j = S.size(); i < size(); i++, j -= BASE_SIZE) {
-			int st = j - BASE_SIZE;
-			if (st < 0) st = 0;
-			int d = j - st;
-			number[i] = stoi(S.substr(st, d));
+
+	number.clear();
+	for (int end_of_digit = S.size();end_of_digit > 0;end_of_digit -= BASE_SIZE) {
+		int start_of_digit = end_of_digit - BASE_SIZE;
+		if (start_of_digit < 0) {
+			start_of_digit = 0;
 		}
+		number.push_back(stoi(S.substr(start_of_digit, end_of_digit - start_of_digit)));
 	}
+
+	makeCorrect();
 	return (*this);
 }
 
 LongNumber LongNumber::divisionByTwo() {
 	for (int i = 0; i < number.size(); i++) {
-		if (number[i] % 2 == 0) {
-			number[i] /= 2;
+		if (number[i] % 2 != 0 && i != 0) {
+			number[i - 1] += BASE / 2;
 		}
-		else {
-			number[i] /= 2;
-			if (i != 0) {
-				number[i - 1] += BASE / 2;
-			}
-		}
+		number[i] /= 2;
 	}
+
 	makeCorrect();
 	return (*this);
 }
 
 LongNumber LongNumber::abs() const{
-	LongNumber temp = (*this);
-	temp.sign = 1;
-	return temp;
+	LongNumber res = (*this);
+	res.sign = 1;
+
+	return res;
 }
 
 LongNumber::LongNumber() {
@@ -79,17 +74,18 @@ LongNumber::LongNumber() {
 }
 
 LongNumber::LongNumber(const char* S) {
-	std::string temp = "";
+	std::string res = "";
 	if (S[0] != '-') {
-		temp.push_back(S[0]);
+		res.push_back(S[0]);
 	}
 	else {
 		sign = -1;
 	}
 	for (int i = 1; S[i] != '\0'; i++) {
-		temp.push_back(S[i]);
+		res.push_back(S[i]);
 	}
-	(*this) = stringToLongNumber(temp);
+
+	(*this) = stringToLongNumber(res);
 }
 
 LongNumber::LongNumber(int V) {
@@ -97,6 +93,7 @@ LongNumber::LongNumber(int V) {
 		sign = -1;
 		V = -V;
 	}
+
 	(*this) = stringToLongNumber(std::to_string(V));
 }
 
@@ -106,12 +103,13 @@ unsigned int LongNumber::size() const {
 
 LongNumber LongNumber::operator-() {
 	sign = -sign;
+
 	return (*this);
 }
 
 LongNumber LongNumber::operator+(const LongNumber& V) const {
 	if (this->sign == -1 && V.sign == -1) {
-		return -((*this).abs() + V.abs());
+		return -(this->abs() + V.abs());
 	}
 	if (this->sign == -1 && V.sign == 1) {
 		return V - this->abs();
@@ -119,22 +117,22 @@ LongNumber LongNumber::operator+(const LongNumber& V) const {
 	if (this->sign == 1 && V.sign == -1) {
 		return (*this) - V.abs();
 	}
+
 	LongNumber res;
 	int sz = V.size();
-	if ((*this).size() > sz) {
-		sz = (*this).size();
+	if (this->size() > sz) {
+		sz = this->size();
 	}
 	for (int i = 0; i < sz; i++) {
-		if (i == res.size()) {
-			res.number.push_back(0);
-		}
+		res.number.push_back(0);
 		if (i < V.size()) {
 			res.number[i] += V.number[i];
 		}
-		if (i < (*this).size()) {
-			res.number[i] += (*this).number[i];
+		if (i < this->size()) {
+			res.number[i] += this->number[i];
 		}
 	}
+
 	res.makeCorrect();
 	return res;
 }
@@ -144,15 +142,16 @@ LongNumber LongNumber::operator-(const LongNumber& V) const {
 		return V.abs() - this->abs();
 	}
 	if (this->sign == -1 && V.sign == 1) {
-		return -((*this).abs() + V);
+		return -(this->abs() + V);
 	}
 	if (this->sign == 1 && V.sign == -1) {
 		return (*this) + V.abs();
 	}
+
 	LongNumber res;
 	int sz = V.size();
-	if ((*this).size() > sz) {
-		sz = (*this).size();
+	if (this->size() > sz) {
+		sz = this->size();
 	}
 	for (int i = 0; i < sz; i++) {
 		if (i == res.size()) {
@@ -161,30 +160,32 @@ LongNumber LongNumber::operator-(const LongNumber& V) const {
 		if (i < V.size()) {
 			res.number[i] -= V.number[i];
 		}
-		if (i < (*this).size()) {
-			res.number[i] += (*this).number[i];
+		if (i < this->size()) {
+			res.number[i] += this->number[i];
 		}
 	}
+
 	res.makeCorrect();
 	return res;
 }
 
 LongNumber LongNumber::operator*(const LongNumber& V) const {
-	LongNumber res;
-	res = 0;
-
+	
+	LongNumber res = 0;
 	for (int i = 0; i < V.number.size(); i++) {
 		LongNumber temp = (*this);
+
 		for (int j = 0; j < i; j++) {
 			temp.number.insert(0, 0);
 		}
+
 		for (int j = 0; j < temp.number.size(); j++) {
 			temp.number[j] *= V.number[i];
 		}
 		res = res + temp;
 	}
-	
 	res.sign = (this->sign * V.sign);
+
 	res.makeCorrect();
 	return res;
 }
@@ -204,6 +205,7 @@ LongNumber LongNumber::operator/(const LongNumber& V) const {
 		}
 	}
 	l.sign = (this->sign * V.sign);
+
 	l.makeCorrect();
 	return l;
 }

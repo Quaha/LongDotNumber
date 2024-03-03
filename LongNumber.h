@@ -11,7 +11,7 @@ private:
 	int sign = 1;
 
 	void makeCorrect();
-	LongNumber stringToLongNumber(const std::string &S);
+	LongNumber stringToLongNumber(std::string S);
 	LongNumber divisionByTwo();
 	LongNumber abs() const;
 
