@@ -75,13 +75,7 @@ LongNumber::LongNumber() {
 
 LongNumber::LongNumber(const char* S) {
 	std::string res = "";
-	if (S[0] != '-') {
-		res.push_back(S[0]);
-	}
-	else {
-		sign = -1;
-	}
-	for (int i = 1; S[i] != '\0'; i++) {
+	for (int i = 0; S[i] != '\0'; i++) {
 		res.push_back(S[i]);
 	}
 
@@ -101,10 +95,11 @@ unsigned int LongNumber::size() const {
 	return number.size();
 }
 
-LongNumber LongNumber::operator-() {
-	sign = -sign;
+LongNumber LongNumber::operator-() const {
+	LongNumber res = (*this);
+	res.sign = res.sign * (-1);
 
-	return (*this);
+	return res;
 }
 
 LongNumber LongNumber::operator+(const LongNumber& V) const {

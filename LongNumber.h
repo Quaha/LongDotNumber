@@ -23,7 +23,7 @@ public:
 
 	unsigned int size() const;
 
-	LongNumber operator-();
+	LongNumber operator-() const;
 	LongNumber operator+(const LongNumber& V) const;
 	LongNumber operator-(const LongNumber& V) const;
 	LongNumber operator*(const LongNumber& V) const;

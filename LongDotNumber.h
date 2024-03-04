@@ -8,5 +8,6 @@ class LongDotNumber:public LongNumber {
 private:
 	LongNumber integer_part;
 	LongNumber fractional_part;
+public:
 
 };
