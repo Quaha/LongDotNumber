@@ -31,7 +31,7 @@ LongDotNumber LongDotNumber::stringToLongDotNumber(std::string S) {
     if (pointIndex != -1) {
         S.erase(pointIndex, 1);
     }
-    number = stringToLongNumber(S);
+    number.stringToLongNumber(S);
     removingExtraDecimalPlaces();
 
     return (*this);
@@ -63,6 +63,15 @@ std::string LongDotNumber::longDotNumberToString() const {
 
     if (degree != 0) {
         result.insert((int)result.size() - (-degree), 1, '.');
+    }
+
+    if (degree != 0) {
+        while (result.back() == '0') {
+            result.pop_back();
+        }
+        if (result.back() == '.') {
+            result.pop_back();
+        }
     }
 
     if (number.__get_sign() == -1) {
