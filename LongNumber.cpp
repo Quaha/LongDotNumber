@@ -36,6 +36,9 @@ LongNumber LongNumber::stringToLongNumber(std::string S) {
 		sign = -1;
 		S = S.substr(1, S.size() - 1);
 	}
+	else {
+		sign = 1;
+	}
 
 	number.clear();
 	for (int end_of_digit = S.size();end_of_digit > 0;end_of_digit -= BASE_SIZE) {
@@ -79,16 +82,11 @@ LongNumber::LongNumber(const char* S) {
 		res.push_back(S[i]);
 	}
 
-	(*this) = stringToLongNumber(res);
+	stringToLongNumber(res);
 }
 
 LongNumber::LongNumber(int V) {
-	if (V < 0) {
-		sign = -1;
-		V = -V;
-	}
-
-	(*this) = stringToLongNumber(std::to_string(V));
+	stringToLongNumber(std::to_string(V));
 }
 
 unsigned int LongNumber::size() const {
@@ -97,7 +95,7 @@ unsigned int LongNumber::size() const {
 
 LongNumber LongNumber::operator-() const {
 	LongNumber res = (*this);
-	res.sign = res.sign * (-1);
+	res.sign = -res.sign;
 
 	return res;
 }
@@ -143,6 +141,10 @@ LongNumber LongNumber::operator-(const LongNumber& V) const {
 		return (*this) + V.abs();
 	}
 
+	if ((*this) < V) {
+		return -(V - (*this));
+	}
+
 	LongNumber res;
 	int sz = V.size();
 	if (this->size() > sz) {
@@ -165,8 +167,8 @@ LongNumber LongNumber::operator-(const LongNumber& V) const {
 }
 
 LongNumber LongNumber::operator*(const LongNumber& V) const {
-	
-	LongNumber res = 0;
+	// Column multiplication
+	LongNumber result = 0;
 	for (int i = 0; i < V.number.size(); i++) {
 		LongNumber temp = (*this);
 
@@ -177,22 +179,23 @@ LongNumber LongNumber::operator*(const LongNumber& V) const {
 		for (int j = 0; j < temp.number.size(); j++) {
 			temp.number[j] *= V.number[i];
 		}
-		res = res + temp;
+		result = result + temp;
 	}
-	res.sign = (this->sign * V.sign);
+	result.sign = (this->sign * V.sign);
 
-	res.makeCorrect();
-	return res;
+	result.makeCorrect();
+	return result;
 }
 
 LongNumber LongNumber::operator/(const LongNumber& V) const {
+	if (V == 0) throw "Division by zero error!";
 	LongNumber l, r, m;
 	l = 0;
-	r = (*this);
+	r = (*this).abs() + 1;
 	int cnt = 0;
 	while (r - l > 1) {
 		m = (l + r).divisionByTwo();
-		if (m * V <= (*this)) {
+		if (m * V.abs() <= (*this).abs()) {
 			l = m;
 		}
 		else {
@@ -235,6 +238,14 @@ bool LongNumber::operator>(const LongNumber& V) const {
 }
 bool LongNumber::operator>=(const LongNumber& V) const {
 	return (*this) > V || (*this) == V;
+}
+
+Vector LongNumber::__get_number() const {
+	return number;
+}
+
+int LongNumber::__get_sign() const {
+	return sign;
 }
 
 std::ostream& operator << (std::ostream& out, const LongNumber& V) {

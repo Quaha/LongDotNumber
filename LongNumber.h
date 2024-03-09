@@ -5,8 +5,10 @@
 
 class LongNumber {
 
-private:
+	friend class LongDotNumber;
 
+protected:
+	
 	Vector number;
 	int sign = 1;
 
@@ -35,6 +37,9 @@ public:
 	bool operator<=(const LongNumber& V) const;
 	bool operator>(const LongNumber& V) const;
 	bool operator>=(const LongNumber& V) const;
+
+	Vector __get_number() const;
+	int __get_sign() const;
 
 	friend std::ostream& operator << (std::ostream& out, const LongNumber& V);
 	friend std::istream& operator >> (std::istream& in, LongNumber& V);

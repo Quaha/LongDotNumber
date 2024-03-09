@@ -1,7 +1,9 @@
 #pragma once
 
-const int BASE = 10000;
+const int BASE = 10000; // must be 10^x
 const int BASE_SIZE = 4;
+
+const int NUMBER_OF_DECIMAL_PLACES = 3;
 
 /*
   _______________     ________        
